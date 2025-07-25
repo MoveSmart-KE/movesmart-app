@@ -1,0 +1,13 @@
+# Virtual Environment
+venv/
+__pycache__/
+
+# Generated Data
+traffic_log.csv
+
+# Trained Models & Artifacts
+saved_models/
+
+# IDE / Editor specific files
+.vscode/
+.idea/
