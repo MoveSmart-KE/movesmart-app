@@ -5,3 +5,4 @@ scikit_learn==1.7.1
 xgboost==3.0.2
 Flask==3.0.3
 Flask-Cors==4.0.1
+gunicorn==22.0.0

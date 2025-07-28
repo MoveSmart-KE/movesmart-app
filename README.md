@@ -37,7 +37,7 @@ First, clone this repository to your local machine.
 
 ```bash
 git clone <your-repository-url>
-cd movesmart-prediction-model
+cd movesmart-app
 ```
 
 ### Step 2: Configure the Backend (Python)
