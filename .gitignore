@@ -1,13 +1,20 @@
-# Virtual Environment
-venv/
-__pycache__/
-
-# Generated Data
-traffic_log.csv
-
-# Trained Models & Artifacts
-saved_models/
-
-# IDE / Editor specific files
+# General Project / OS ignores
 .vscode/
 .idea/
+.DS_Store
+
+# --- Backend (Python) ---
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+
+# --- Frontend (Node.js / Vite) ---
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-error.log*
+frontend/yarn-debug.log*

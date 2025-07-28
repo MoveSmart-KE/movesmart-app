@@ -1,86 +1,128 @@
-# Predictive Traffic Analysis Engine 🚗💨
+# MoveSmart AI: Predictive Traffic Route Optimizer 🚗💨🧠
 
-Welcome to the lab! This project is a comprehensive, end-to-end machine learning pipeline designed to predict traffic congestion and vehicle speed based on a variety of temporal and spatial features. What started as a simple model evolved into a sophisticated, two-stage predictive engine. Mwahaha!
+Welcome to the MoveSmart AI project! This is a full-stack web application that uses a pre-trained, chained XGBoost model to predict traffic and find the truly fastest, AI-optimized route between two points.
 
-## ✨ Features
+This isn't just a map that shows you the path; it's an intelligent system that analyzes multiple route alternatives and, using our bespoke traffic prediction model, recommends the one that will actually save you the most time.
 
-- **📈 Synthetic Data Generation:** Includes a script to generate realistic, time-series traffic data, complete with simulated rush hours.
-- **🛠️ Advanced Feature Engineering:** We didn't just use the raw data! We brewed a powerful concoction of features, including:
-  - **Cyclical Time Features:** `hour_sin` and `hour_cos` to represent the time of day smoothly.
-  - **Interaction Features:** Combining location and time (`lat_x_hour_sin`) to capture complex relationships.
-  - **Lag Features:** Giving the model a "memory" of the traffic conditions from 10 minutes prior.
-- **🚀 Chained Modeling Pipeline:** Our crowning achievement! This is a two-stage prediction process:
-  1.  First, a highly-tuned XGBoost model predicts the **congestion level**.
-  2.  Then, that prediction is used as a **powerful new feature** for a second XGBoost model that predicts the **vehicle speed**.
-- **📦 Automated Model Saving & Versioning:** The training script automatically saves the best-performing models, their feature lists, performance metrics, and hyperparameters, with clear prefixes to keep our experiments organized.
-- **🌐 Portability:** Comes with a minimal `requirements.txt` and a `.gitignore` file, making the project clean, lean, and ready for deployment anywhere.
+## 🏛️ Project Architecture
 
-## 💻 Tech Stack
+This repository contains a **monorepo** with two distinct parts:
 
-- **Python 3**
-- **Pandas** for data manipulation
-- **Scikit-learn** for preprocessing and model evaluation
-- **XGBoost** as our champion modeling library
-- **Joblib** for saving and loading our magnificent creations
+*   **`/backend`**: A lean Python/Flask application that serves our pre-trained machine learning model as a REST API.
+*   **`/frontend`**: A modern React/TypeScript application (built with Vite) that provides the user interface, calls the Mapbox API for route geometry, and communicates with our backend to get AI-powered predictions.
 
-## 🚀 Getting Started
+## ✨ Tech Stack
 
-Follow these steps to unleash the power of this project on your own machine.
+| Area      | Technology                               |
+| :-------- | :--------------------------------------- |
+| **Backend** | Python, Flask, XGBoost, Pandas, Scikit-learn |
+| **Frontend**  | React, TypeScript, Vite, Mapbox GL JS, Axios |
 
-### 1. Prerequisites
+## 🚀 Getting Started: A Foolproof Guide
 
-- Python 3.8 or higher
-- `venv` for virtual environments
+Follow these steps precisely to get the application up and running on your local machine.
 
-### 2. Installation & Setup
+### Prerequisites
 
-Clone the repository and set up the virtual environment:
+Make sure you have the following software installed on your system:
 
-```bash
-# 1. Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows, use: .\venv\Scripts\activate
+*   **Git:** For cloning the repository.
+*   **Python:** Version 3.8 or higher.
+*   **Node.js:** Version 18.x or higher.
+*   **npm:** (Usually comes with Node.js).
 
-# 2. Install the required libraries from our magical scroll
-pip install -r requirements.txt
-```
+### Step 1: Clone the Repository
 
-### 3. Training the Models
-
-Run the main analysis script. This will generate fresh data, perform all the feature engineering, and train both stages of our chained XGBoost pipeline.
+First, clone this repository to your local machine.
 
 ```bash
-python traffic_analysis.py
-```
-This will populate the `saved_models/` directory with our champion models and their artifacts.
-
-### 4. Making Predictions
-
-Once the models are trained, you can use the `predict.py` script to see them in action on new data.
-
-```bash
-python predict.py
+git clone <your-repository-url>
+cd movesmart-prediction-model
 ```
 
-This will output a prediction for a sample rush-hour scenario and a non-rush-hour scenario, demonstrating the model's intelligence.
+### Step 2: Configure the Backend (Python)
 
-## 📊 Final Model Performance
+Our Python server needs its own isolated environment and dependencies.
 
-Our final, chained XGBoost champion achieved the following performance on the test set:
+1.  **Navigate to the Backend Directory:**
+    ```bash
+    cd backend
+    ```
 
-| Task | R-squared | RMSE | MAE |
-| :--- | :--- | :--- | :--- |
-| **Congestion** | 0.44 | 0.21 | 0.16 |
-| **Speed** | 0.51 | 16.95 km/h | 11.95 km/h |
+2.  **Create a Virtual Environment:**
+    ```bash
+    python -m venv venv
+    ```
 
-This shows a strong ability to explain the variance in the data and make predictions with a reasonably low error.
+3.  **Activate the Virtual Environment:**
+    *   On **macOS / Linux**:
+        ```bash
+        source venv/bin/activate
+        ```
+    *   On **Windows**:
+        ```bash
+        .\venv\Scripts\activate
+        ```
+    You'll know it's working if you see `(venv)` at the beginning of your terminal prompt.
 
-## 🎨 Future Ideas for More SCIENCE!
+4.  **Install Python Dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-- **Real-World Data:** The ultimate test would be to unleash this pipeline on a real-world traffic dataset.
-- **Even More Features:** Experiment with weather data, holidays, or road event information.
-- **Alternative Models:** Test other champions like CatBoost or even deep learning models like LSTMs for the time-series component.
+### Step 3: Configure the Frontend (React)
 
----
+The frontend has its own set of dependencies and requires a secret API key.
 
-It's been a pleasure building this. Now go forth and predict!
+1.  **Navigate to the Frontend Directory:** (From the project root)
+    ```bash
+    cd frontend
+    ```
+
+2.  **Create the Environment File (CRITICAL STEP):**
+    The application needs a Mapbox API key to function. You must create a file named `.env` inside the `/frontend` directory.
+
+    > **⚠️ IMPORTANT:** This file contains your secret key. Our `.gitignore` is configured to **never** commit this file to GitHub.
+
+    Create the file and add your key like this:
+
+    **File: `frontend/.env`**
+    ```
+    VITE_MAPBOX_ACCESS_TOKEN='YOUR_MAPBOX_TOKEN_HERE'
+    ```
+    Replace `YOUR_MAPBOX_TOKEN_HERE` with your actual, valid access token from your [Mapbox account](https://www.mapbox.com/).
+
+3.  **Install Node Dependencies:**
+    ```bash
+    npm install
+    ```
+
+### Step 4: Run the Application!
+
+To run the full application, you need **two separate terminals** running at the same time.
+
+**In your FIRST terminal, run the Backend API:**
+
+1.  Navigate to the `backend` directory.
+2.  Make sure your virtual environment is activated.
+3.  Start the Flask server.
+
+    ```bash
+    cd backend
+    source venv/bin/activate  # Or .\venv\Scripts\activate on Windows
+    python app.py
+    ```
+    You should see messages indicating that the models are being loaded and the server is running on port 5001.
+
+**In your SECOND terminal, run the Frontend App:**
+
+1.  Navigate to the `frontend` directory.
+2.  Start the Vite development server.
+
+    ```bash
+    cd frontend
+    npm run dev
+    ```
+    You should see a message telling you which URL to open in your browser, usually `http://localhost:5173/`.
+
+**You're live!** Open the URL in your browser, and you will see the MoveSmart AI Route Optimizer, ready for action.
