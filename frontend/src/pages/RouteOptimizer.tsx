@@ -10,7 +10,7 @@ interface RouteResult {
   mapboxTime: number;
   predictedTime?: number; // Optional now
   routeIndex: number;
-  status: 'success' | 'failed';
+  status: 'success' | 'failed' | 'not_applicable';
 }
 
 const RouteOptimizer = () => {
@@ -117,15 +117,21 @@ const RouteOptimizer = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        {route.status === 'failed' ? (
+                        {route.status === 'success' && (
+                          <>
+                            <p className="text-2xl font-bold text-gray-800">{formatDuration(route.predictedTime!)}</p>
+                            <p className="text-sm text-gray-600">Standard Time: {formatDuration(route.mapboxTime)}</p>
+                          </>
+                        )}
+                        {route.status === 'failed' && (
                           <div>
                             <p className="text-lg font-bold text-yellow-600">Prediction Unavailable</p>
                             <p className="text-xs text-gray-500">Could not reach AI server.</p>
                           </div>
-                        ) : (
-                          <p className="text-2xl font-bold text-gray-800">{formatDuration(route.predictedTime!)}</p>
                         )}
-                        <p className="text-sm text-gray-600">Standard Time: {formatDuration(route.mapboxTime)}</p>
+                        {route.status === 'not_applicable' && (
+                           <p className="text-2xl font-bold text-gray-800">{formatDuration(route.mapboxTime)}</p>
+                        )}
                         {bestRoute?.routeIndex === route.routeIndex && (
                           <p className="text-sm font-bold text-green-600">MoveSmart AI Recommended</p>
                         )}
