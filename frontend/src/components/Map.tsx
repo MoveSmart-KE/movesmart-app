@@ -54,6 +54,7 @@ const Map = ({ origin, destination, setRouteResults, setLoading }: MapProps) => 
       for (let routeIndex = 0; routeIndex < e.route.length; routeIndex++) {
         const route = e.route[routeIndex];
         let totalPredictedDuration = 0;
+        let predictionFailed = false; // <-- Our new failure flag
 
         for (const leg of route.legs) {
           for (let i = 0; i < leg.steps.length; i++) {
@@ -95,19 +96,32 @@ const Map = ({ origin, destination, setRouteResults, setLoading }: MapProps) => 
                 }
               } catch (error) {
                 console.error("Prediction API error:", error);
-                totalPredictedDuration += step.duration / 60;
+                predictionFailed = true; // <-- Set the flag on error
+                break; // Exit the inner loop for this route
               }
             } else {
               totalPredictedDuration += step.duration / 60;
             }
           }
+          if (predictionFailed) break; // Exit the outer loop for this route
         }
-        results.push({
-          routeName: `Route ${routeIndex + 1} (${route.legs[0].summary})`,
-          mapboxTime: Math.round(route.duration / 60),
-          predictedTime: Math.round(totalPredictedDuration),
-          routeIndex: routeIndex,
-        });
+        
+        if (predictionFailed) {
+          results.push({
+            routeName: `Route ${routeIndex + 1} (${route.legs[0].summary})`,
+            mapboxTime: Math.round(route.duration / 60),
+            status: 'failed',
+            routeIndex: routeIndex,
+          });
+        } else {
+          results.push({
+            routeName: `Route ${routeIndex + 1} (${route.legs[0].summary})`,
+            mapboxTime: Math.round(route.duration / 60),
+            predictedTime: Math.round(totalPredictedDuration),
+            status: 'success',
+            routeIndex: routeIndex,
+          });
+        }
       }
       setRouteResults(results);
       setLoading(false);
