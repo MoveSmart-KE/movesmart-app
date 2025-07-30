@@ -17,10 +17,10 @@ const RouteOptimizer = () => {
   const [routeResults, setRouteResults] = useState<RouteResult[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const bestRoute = routeResults.length > 0
-    ? routeResults
-        .filter(route => route.status === 'success') // Exclude failed predictions
-        .reduce((best, current) => (current.predictedTime! < best.predictedTime! ? current : best), null as RouteResult | null)
+  const successfulRoutes = routeResults.filter(route => route.status === 'success');
+
+  const bestRoute = successfulRoutes.length > 0
+    ? successfulRoutes.reduce((best, current) => (current.predictedTime! < best.predictedTime! ? current : best))
     : null;
 
   return (
