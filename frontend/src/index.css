@@ -97,7 +97,31 @@
     @apply border-border;
   }
 
+  @keyframes bg-gradient-move {
+    0% {
+      background-position: 0% 50%, 70% 30%, 0 0, 0 0;
+      background-size: 200% 200%, 100% 100%, 400px 400px, 400px 400px;
+    }
+    50% {
+      background-position: 100% 50%, 60% 40%, 0 0, 0 0;
+      background-size: 200% 200%, 120% 120%, 400px 400px, 400px 400px;
+    }
+    100% {
+      background-position: 0% 50%, 70% 30%, 0 0, 0 0;
+      background-size: 200% 200%, 100% 100%, 400px 400px, 400px 400px;
+    }
+  }
   body {
     @apply bg-background text-foreground;
+    /* Animated: Layered gradients with a moving highlight, static grid and noise overlays */
+    background:
+      linear-gradient(120deg, hsl(var(--background)) 0%, hsl(var(--primary) / 0.10) 100%),
+      radial-gradient(circle at 70% 30%, hsl(var(--primary) / 0.08) 0%, transparent 60%),
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><g opacity="0.04"><rect width="400" height="400" fill="white"/><path d="M0 40h400M0 80h400M0 120h400M0 160h400M0 200h400M0 240h400M0 280h400M0 320h400M0 360h400M40 0v400M80 0v400M120 0v400M160 0v400M200 0v400M240 0v400M280 0v400M320 0v400M360 0v400" stroke="%23000" stroke-width="1"/></g></svg>'),
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="400" height="400" filter="url(%23noiseFilter)" opacity="0.04"/></svg>');
+    background-blend-mode: soft-light, lighten, normal, normal;
+    background-size: 200% 200%, 100% 100%, 400px 400px, 400px 400px;
+    background-repeat: no-repeat;
+    animation: bg-gradient-move 18s ease-in-out infinite;
   }
 }

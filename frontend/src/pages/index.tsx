@@ -1,4 +1,3 @@
-
 import Navigation from "@/components/Navigation";
 import MetricCard from "@/components/MetricCard";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import {
   ArrowRight,
   CheckCircle
 } from "lucide-react";
+import BackgroundImage from "@/background.jpg";
 
 const Index = () => {
   return (
@@ -19,8 +19,17 @@ const Index = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-green-600 via-green-500 to-blue-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section
+        className="relative text-white"
+        style={{
+          backgroundImage: `linear-gradient(to bottom right, rgba(16, 185, 129, 0.7), rgba(37, 99, 235, 0.7)), url(${BackgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 z-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               MOVESMARTKE
