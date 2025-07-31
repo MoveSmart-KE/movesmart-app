@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -50,10 +50,25 @@ const Map = ({ origin, destination, setRouteResults, setLoading }: MapProps) => 
       setLoading(true);
       const results = [];
       const finalDestination = directionsControl.current?.getDestination();
-
+      
       for (let routeIndex = 0; routeIndex < e.route.length; routeIndex++) {
         const route = e.route[routeIndex];
+        const isDrivingProfile = route.weight_name === 'auto';
+        
+        // For non-driving profiles, just use the standard Mapbox time.
+        if (!isDrivingProfile) {
+          results.push({
+            routeName: `Route ${routeIndex + 1} (${route.legs[0].summary})`,
+            mapboxTime: Math.round(route.duration / 60),
+            status: 'not_applicable',
+            routeIndex: routeIndex,
+          });
+          continue; // Skip to the next route
+        }
+
+        // --- AI Prediction Logic for Driving Profiles ---
         let totalPredictedDuration = 0;
+        let predictionFailed = false;
 
         for (const leg of route.legs) {
           for (let i = 0; i < leg.steps.length; i++) {
@@ -74,14 +89,24 @@ const Map = ({ origin, destination, setRouteResults, setLoading }: MapProps) => 
                 continue;
               }
 
+              // --- Dynamic Feature Calculation ---
+              const distanceKm = step.distance / 1000;
+              const durationHours = step.duration / 3600;
+              const currentSpeedKph = durationHours > 0 ? distanceKm / durationHours : 60; // Avoid division by zero
+              
+              // Assuming a free-flow speed of 100 kph for congestion calculation.
+              // This could be made more sophisticated later.
+              const freeFlowSpeed = 100; 
+              const congestion = Math.max(0, 1 - (currentSpeedKph / freeFlowSpeed));
+
               const payload = {
                 timestamp: new Date().toISOString(),
                 start_coords: startCoords,
                 end_coords: endCoords,
                 name: step.name || 'Unknown Segment',
-                free_flow_speed: 60,
-                congestion_lag_1: 0.2,
-                speed_lag_1: 50,
+                free_flow_speed: freeFlowSpeed,
+                congestion_lag_1: congestion,
+                speed_lag_1: currentSpeedKph,
               };
 
               try {
@@ -95,19 +120,32 @@ const Map = ({ origin, destination, setRouteResults, setLoading }: MapProps) => 
                 }
               } catch (error) {
                 console.error("Prediction API error:", error);
-                totalPredictedDuration += step.duration / 60;
+                predictionFailed = true;
+                break;
               }
             } else {
               totalPredictedDuration += step.duration / 60;
             }
           }
+          if (predictionFailed) break;
         }
-        results.push({
-          routeName: `Route ${routeIndex + 1} (${route.legs[0].summary})`,
-          mapboxTime: Math.round(route.duration / 60),
-          predictedTime: Math.round(totalPredictedDuration),
-          routeIndex: routeIndex,
-        });
+        
+        if (predictionFailed) {
+          results.push({
+            routeName: `Route ${routeIndex + 1} (${route.legs[0].summary})`,
+            mapboxTime: Math.round(route.duration / 60),
+            status: 'failed',
+            routeIndex: routeIndex,
+          });
+        } else {
+          results.push({
+            routeName: `Route ${routeIndex + 1} (${route.legs[0].summary})`,
+            mapboxTime: Math.round(route.duration / 60),
+            predictedTime: Math.round(totalPredictedDuration),
+            status: 'success',
+            routeIndex: routeIndex,
+          });
+        }
       }
       setRouteResults(results);
       setLoading(false);

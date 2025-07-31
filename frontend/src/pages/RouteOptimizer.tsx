@@ -3,20 +3,24 @@ import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { Navigation as NavigationIcon, Clock, Zap, BrainCircuit } from "lucide-react";
+import { formatDuration } from "@/lib/utils";
 
 interface RouteResult {
   routeName: string;
   mapboxTime: number;
-  predictedTime: number;
+  predictedTime?: number; // Optional now
   routeIndex: number;
+  status: 'success' | 'failed' | 'not_applicable';
 }
 
 const RouteOptimizer = () => {
   const [routeResults, setRouteResults] = useState<RouteResult[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const bestRoute = routeResults.length > 0 
-    ? routeResults.reduce((best, current) => current.predictedTime < best.predictedTime ? current : best)
+  const successfulRoutes = routeResults.filter(route => route.status === 'success');
+
+  const bestRoute = successfulRoutes.length > 0
+    ? successfulRoutes.reduce((best, current) => (current.predictedTime! < best.predictedTime! ? current : best))
     : null;
 
   return (
@@ -113,8 +117,21 @@ const RouteOptimizer = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        <p className="text-2xl font-bold text-gray-800">{route.predictedTime} min</p>
-                        <p className="text-sm text-gray-600">Standard Time: {route.mapboxTime} min</p>
+                        {route.status === 'success' && (
+                          <>
+                            <p className="text-2xl font-bold text-gray-800">{formatDuration(route.predictedTime!)}</p>
+                            <p className="text-sm text-gray-600">Standard Time: {formatDuration(route.mapboxTime)}</p>
+                          </>
+                        )}
+                        {route.status === 'failed' && (
+                          <div>
+                            <p className="text-lg font-bold text-yellow-600">Prediction Unavailable</p>
+                            <p className="text-xs text-gray-500">Could not reach AI server.</p>
+                          </div>
+                        )}
+                        {route.status === 'not_applicable' && (
+                           <p className="text-2xl font-bold text-gray-800">{formatDuration(route.mapboxTime)}</p>
+                        )}
                         {bestRoute?.routeIndex === route.routeIndex && (
                           <p className="text-sm font-bold text-green-600">MoveSmart AI Recommended</p>
                         )}
