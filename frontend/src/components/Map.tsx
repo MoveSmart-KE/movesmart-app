@@ -44,6 +44,25 @@ const Map = ({ origin, destination, setRouteResults, setLoading }: MapProps) => 
     directionsControl.current = directions;
     map.current.addControl(directions, 'top-left');
 
+    const geolocate = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true,
+      showUserHeading: true
+    });
+
+    geolocate.on('geolocate', (e) => {
+      const longitude = e.coords.longitude;
+      const latitude = e.coords.latitude
+      const position = [longitude, latitude];
+      if (directionsControl.current) {
+        directionsControl.current.setOrigin(position);
+      }
+    });
+
+    map.current.addControl(geolocate, 'bottom-right');
+
     directions.on('route', async (e: any) => {
       if (!e.route || e.route.length === 0) return;
       
