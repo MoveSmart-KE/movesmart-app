@@ -4,7 +4,7 @@ from predict import make_predictions
 import joblib
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 import pandas as pd
 
 app = Flask(__name__)
@@ -63,7 +63,7 @@ def log_trip_endpoint():
     if not data:
         return jsonify({"error": "Invalid input: no JSON payload"}), 400
     
-    data['server_timestamp'] = datetime.now(datetime.UTC).isoformat()
+    data['server_timestamp'] = datetime.now(timezone.utc).isoformat()
     
     try:
         with open("trip_logs.jsonl", "a") as f:
