@@ -35,7 +35,7 @@ const RouteOptimizer = () => {
           <div className="lg:col-span-3 space-y-9">
             <Card className="h-96">
               <CardContent className="h-full p-0">
-                <Map setRouteResults={setRouteResults} setLoading={setLoading} />
+                <Map routeResults={routeResults} setRouteResults={setRouteResults} setLoading={setLoading} />
               </CardContent>
             </Card>
 
@@ -99,7 +99,7 @@ const RouteOptimizer = () => {
                   <Card 
                     key={route.routeIndex}
                     className={`cursor-pointer transition-all ${bestRoute?.routeIndex === route.routeIndex ? "border-green-400 bg-green-50 shadow-lg" : "hover:shadow-md"}`}
-                    onClick={() => directionsControl.current?.setRouteIndex(route.routeIndex)}
+                    // onClick={() => directionsControl.current?.setRouteIndex(route.routeIndex)}
                   >
                     <CardHeader className="pb-4">
                       <CardTitle className="text-lg flex items-center">
